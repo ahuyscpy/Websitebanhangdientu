@@ -1,0 +1,580 @@
+﻿@model Gemini.Models._03_Pos.PosProduceModel
+@{
+    Layout = "~/Views/Shared/_FormList.cshtml";
+    bool isAdmin = ViewBag.IsAdmin;
+}
+
+@Html.Action("AToolbarItem", "Nav")
+
+<style>
+    #map {
+        height: 400px;
+        width: 100%;
+    }
+</style>
+
+<div class="k-edit-form-container" style=" overflow-x: hidden; ">
+    <form method="post" id="frmEdit" class="form-horizontal" role="form">
+        <div id="Tabs">
+            <ul>
+                <li class="k-state-active">@Html.Label(@Gemini.Resources.Resource.LBasic)</li>
+                <li>@Html.Label(@Gemini.Resources.Resource.LDescribe)</li>
+                <li>@Html.Label(@Gemini.Resources.Resource.LImage)</li>
+                <li>@Html.Label("Địa chỉ")</li>
+            </ul>
+
+            @*Cơ bản*@
+            <div>
+                <div style="height: 0; overflow: hidden">
+                    @Html.HiddenFor(model => model.Guid)
+                    @Html.HiddenFor(model => model.IsUpdate)
+                    @Html.HiddenFor(model => model.ApprovedStatus)
+                    @Html.HiddenFor(model => model.ApprovedBy)
+                    @Html.HiddenFor(model => model.ApprovedAt)
+                    @Html.HiddenFor(model => model.Legit)
+                    @Html.HiddenFor(model => model.LegitCount)
+                    <input type="hidden" id="hfLuuvathem" value="0" /><input type="hidden" id="hfExpand" value="0" />
+                    <button type="submit" id="btnLuu" style="visibility: hidden"></button>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 col-md-2">
+                        @Html.LabelFor(m => m.Name)
+                    </div>
+                    <div class="col-sm-10 col-md-10">
+                        @Html.TextBoxFor(model => model.Name, new { @class = "k-textbox", @onchange = "Friendly_urlChange();" })
+                        <div>@Html.ValidationMessageFor(model => model.Name)</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 col-md-2">
+                        @Html.LabelFor(m => m.Price)
+                    </div>
+                    <div class="col-sm-4 col-md-4">
+                        @Html.Kendo().NumericTextBoxFor(model => model.Price).HtmlAttributes(new { style = "width:100%;" }).Format("n0")
+                        <div>@Html.ValidationMessageFor(model => model.Price)</div>
+                    </div>
+                    <div class="col-sm-2 col-md-2">
+                        @Html.LabelFor(m => m.Unit)
+                    </div>
+                    <div class="col-sm-4 col-md-4">
+                        @Html.Kendo().TextBoxFor(model => model.Unit).HtmlAttributes(new { @class = "k-textbox", @Value = "VNĐ" })
+                        <div>@Html.ValidationMessageFor(model => model.Unit)</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 col-md-2">
+                        @Html.LabelFor(m => m.Amount)
+                    </div>
+                    <div class="col-sm-4 col-md-4">
+                        @Html.Kendo().NumericTextBoxFor(model => model.Amount).HtmlAttributes(new { style = "width:100%;" }).Format("n0")
+                        <div>@Html.ValidationMessageFor(model => model.Amount)</div>
+                    </div>
+                    <div class="col-sm-2 col-md-2">
+                        @Html.LabelFor(m => m.Sort)
+                    </div>
+                    <div class="col-sm-4 col-md-4">
+                        @Html.Kendo().NumericTextBoxFor(model => model.Sort).HtmlAttributes(new { style = "width:100%;" }).Format("n0")
+                        <div>@Html.ValidationMessageFor(model => model.Sort)</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-sm-2 col-md-2">
+                        @Html.LabelFor(m => m.GuidCategory)
+                    </div>
+                    <div class="col-sm-4 col-md-4">
+                        @(Html.Kendo().DropDownListFor(model => model.GuidCategory)
+                      .Name("GuidCategory")
+                      .HtmlAttributes(new { @class = "k-dropdown" })
+                      .HtmlAttributes(new { style = "width:100%;z-index:1;" })
+                      .Filter(FilterType.Contains).OptionLabel(@Gemini.Resources.Resource.LChoose)
+                      .DataTextField("Name")
+                      .DataValueField("Guid")
+                      .DataSource(source => source.Read(read => read.Action("PosCategory", "Combo")))
+                        )
+                        <div>@Html.ValidationMessageFor(model => model.GuidCategory)</div>
+                    </div>
+                    <div class="col-sm-2 col-md-2">
+                        @Html.LabelFor(m => m.Active)
+                    </div>
+                    <div class="col-sm-4 col-md-4">
+                        @Html.CheckBoxFor(model => model.Active)
+                        <div>@Html.ValidationMessageFor(model => model.Active)</div>
+                    </div>
+                </div>
+
+                @if (isAdmin == true)
+                {
+                    <div class="form-group">
+                        <div class="col-sm-2 col-md-2">
+                            @Html.LabelFor(m => m.HotProduce)
+                        </div>
+                        <div class="col-sm-4 col-md-4">
+                            @Html.CheckBoxFor(model => model.HotProduce)
+                            <div>@Html.ValidationMessageFor(model => model.HotProduce)</div>
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <div class="col-sm-2 col-md-2">
+                        @Html.Label("Ghi chú:")
+                    </div>
+                </div>
+                <div>
+                    @(Html.Kendo().EditorFor(model => model.Note)
+                          .HtmlAttributes(new { style = "width: 100%;height:420px" })
+                          .Tools(tools => tools
+                              .Clear().Bold().Italic().Underline().Strikethrough().JustifyLeft().JustifyCenter().JustifyRight().JustifyFull()
+                              .InsertUnorderedList().InsertOrderedList().Outdent().Indent().CreateLink().Unlink()
+                              .InsertImage().InsertFile().SubScript().SuperScript().TableEditing().ViewHtml().Formatting().FontName()
+                              .FontSize().FontColor().BackColor()
+                          //.CustomButton(cb => cb.Name("Preview template").ToolTip("Preview template").Exec("Preview"))
+                          ).ImageBrowser(imageBrowser => imageBrowser
+                              .Image("~/Content/UserFiles/Others/{0}")
+                              .Read("Read", "ImageBrowser")
+                              .Create("Create", "ImageBrowser")
+                              //.Destroy("Destroy", "ImageBrowser")
+                              .Upload("Upload", "ImageBrowser")
+                              .Thumbnail("Thumbnail", "ImageBrowser"))
+                              .FileBrowser(fileBrowser => fileBrowser
+                              .File("~/Content/UserFiles/Others/{0}")
+                              .Read("Read", "FileBrowser")
+                              .Create("Create", "FileBrowser")
+                              //.Destroy("Destroy", "FileBrowser")
+                              .Upload("Upload", "FileBrowser")
+                          ))
+                    <div>@Html.ValidationMessageFor(model => model.Note)</div>
+                </div>
+            </div>
+
+            @*Mô tả*@
+            <div>
+                @(Html.Kendo().EditorFor(model => model.Description)
+                      .HtmlAttributes(new { style = "width: 100%;height:420px" })
+                      .Tools(tools => tools
+                          .Clear().Bold().Italic().Underline().Strikethrough().JustifyLeft().JustifyCenter().JustifyRight().JustifyFull()
+                          .InsertUnorderedList().InsertOrderedList().Outdent().Indent().CreateLink().Unlink()
+                          .InsertImage().InsertFile().SubScript().SuperScript().TableEditing().ViewHtml().Formatting().FontName()
+                          .FontSize().FontColor().BackColor()
+                      //.CustomButton(cb => cb.Name("Preview template").ToolTip("Preview template").Exec("Preview"))
+                      ).ImageBrowser(imageBrowser => imageBrowser
+                          .Image("~/Content/UserFiles/Others/{0}")
+                          .Read("Read", "ImageBrowser")
+                          .Create("Create", "ImageBrowser")
+                          //.Destroy("Destroy", "ImageBrowser")
+                          .Upload("Upload", "ImageBrowser")
+                          .Thumbnail("Thumbnail", "ImageBrowser"))
+                          .FileBrowser(fileBrowser => fileBrowser
+                          .File("~/Content/UserFiles/Others/{0}")
+                          .Read("Read", "FileBrowser")
+                          .Create("Create", "FileBrowser")
+                          //.Destroy("Destroy", "FileBrowser")
+                          .Upload("Upload", "FileBrowser")
+                      ))
+            </div>
+
+            @*Ảnh*@
+            <div>
+                @(Html.Kendo().Grid<Gemini.Models._02_Cms.U.UGalleryModel>()
+                            .Name("grid")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(p => p.Name).Width(60)
+                                    .ClientTemplate("# if (IsProduce == true) { #" + "<input class='chkbox' type='checkbox' checked/>" + "# } else { #" + "<input class='chkbox' type='checkbox'/>" + "# } #").Filterable(false).HeaderTemplate("<input type='checkbox' id='selectAll'  onclick='checkall()' />").Sortable(false);
+                                columns.Bound(p => p.Name).Width(145).Sortable(true).Filterable(ftb => ftb.Cell(cell => cell.Operator("contains")));
+                                columns.Bound(p => p.Image).Width(85).ClientTemplate("<img height='50px' width='85px' src='#:Image#'  alt='' align='middle' />").Filterable(false).Sortable(false);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                            toolbar.Template(@<text>
+                                                <div class="form-horizontal toolbar">
+                                                    <div class="col-md-3">
+                                                        <input type="file" name="File_path1" id="btnUpload" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-horizontal toolbar">
+                                                    <div class="col-md-3">
+                                                        <a class="k-button" id="btnDeleteImage" onclick="DeleteImage()"><i class="glyphicon glyphicon-log-out"></i> Delete Image</a>
+                                                    </div>
+                                                </div>
+                            </text>);
+                            })
+                            .Pageable(pageable => pageable.PageSizes(new[] { 5, 10, 20, 50, 100, 200, 500, 1000 }))
+                            .Sortable()
+                            .Scrollable()
+                            .Selectable()
+                            .Filterable(ftb => ftb.Mode(GridFilterMode.Row))
+                            .Navigatable()
+
+                            .Resizable(resize => resize.Columns(true))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(1000)
+                                .ServerOperation(false)
+                                .Model(model => model.Id(p => p.Guid))
+                                .Read(read => read.Action("ReadProduce", "UGallery", new { guid = Model.Guid }))
+                                .Batch(false)
+                                .AutoSync(false)
+                            )
+                        //.Events(e => e.DataBound("grid_DataBound"))
+                        )
+            </div>
+
+            @*Địa chỉ*@
+            <div>
+                <!-- Search input -->
+                <input id="searchInput" class="controls k-textbox" type="text" placeholder="Tìm kiếm ..." style="width: 75%">
+
+                <!-- Google map -->
+                <div id="map"></div>
+
+                <!-- Display geolocation data -->
+                <ul class="geo-data">
+                    <li>Địa chỉ: @Html.TextBoxFor(model => model.FullAddress, new { @class = "k-textbox", @id = "location" })</li>
+                    <li>Vĩ độ: @Html.TextBoxFor(model => model.Latitude, new { @class = "k-textbox", @id = "lat" })</li>
+                    <li>Kinh độ: @Html.TextBoxFor(model => model.Longitude, new { @class = "k-textbox", @id = "lon" })</li>
+                </ul>
+            </div>
+
+            @*Seo*@
+            <div style="display: none">
+
+                <div class="form-group">
+                    <div class="col-md-2 col-sm-2">
+                        @Html.LabelFor(m => m.SeoFriendUrl)
+                    </div>
+                    <div class="col-md-10 col-sm-10">
+                        @Html.TextBoxFor(model => model.SeoFriendUrl, new { @class = "k-textbox" })
+                        <div>@Html.ValidationMessageFor(model => model.SeoFriendUrl)</div>
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <div class="col-md-2 col-sm-2">
+                        @Html.LabelFor(m => m.SeoTitle)
+                    </div>
+                    <div class="col-md-10 col-sm-10">
+                        @Html.TextAreaFor(model => model.SeoTitle, new { @class = "k-textbox", rows = "3" })
+                        <div>@Html.ValidationMessageFor(model => model.SeoTitle)</div>
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+                    <div class="col-md-2 col-sm-2">
+                        @Html.LabelFor(m => m.SeoDescription)
+                    </div>
+                    <div class="col-md-10 col-sm-10">
+                        @Html.TextAreaFor(model => model.SeoDescription, new { @class = "k-textbox", rows = "5" })
+                        <div>@Html.ValidationMessageFor(model => model.SeoDescription)</div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+@*div Main*@
+<div>
+    @(Html.Kendo().Window()
+          .Name("WidgetConfigWindow1")
+          .Title("Image")
+          .Iframe(true)
+          .Events(ev => ev.Open(@"function(f){
+                if(window.loaded){
+                    this.refresh();
+                }
+                window.loaded = true;
+            }"))
+          .Animation(true)
+          .Resizable()
+          .Draggable()
+          .Width(850).Height(400)
+          .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+          .HtmlAttributes(new { style = "marign:0;padding:0;overflow:hidden" })
+          .Visible(false)
+          .Modal(true)
+          )
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap" async defer></script>
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: -33.8688, lng: 151.2195 },
+            zoom: 13
+        });
+        var input = document.getElementById('searchInput');
+        map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        autocomplete.bindTo('bounds', map);
+
+        var infowindow = new google.maps.InfoWindow();
+        var marker = new google.maps.Marker({
+            map: map,
+            anchorPoint: new google.maps.Point(0, -29)
+        });
+
+        autocomplete.addListener('place_changed', function () {
+            infowindow.close();
+            marker.setVisible(false);
+            var place = autocomplete.getPlace();
+            if (!place.geometry) {
+                window.alert("Autocomplete's returned place contains no geometry");
+                return;
+            }
+
+            // If the place has a geometry, then present it on a map.
+            if (place.geometry.viewport) {
+                map.fitBounds(place.geometry.viewport);
+            } else {
+                map.setCenter(place.geometry.location);
+                map.setZoom(17);
+            }
+            marker.setIcon(({
+                url: place.icon,
+                size: new google.maps.Size(71, 71),
+                origin: new google.maps.Point(0, 0),
+                anchor: new google.maps.Point(17, 34),
+                scaledSize: new google.maps.Size(35, 35)
+            }));
+            marker.setPosition(place.geometry.location);
+            marker.setVisible(true);
+
+            var address = '';
+            if (place.address_components) {
+                address = [
+                    (place.address_components[0] && place.address_components[0].short_name || ''),
+                    (place.address_components[1] && place.address_components[1].short_name || ''),
+                    (place.address_components[2] && place.address_components[2].short_name || '')
+                ].join(' ');
+            }
+
+            infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+            infowindow.open(map, marker);
+
+            //for (var i = 0; i < place.address_components.length; i++) {
+            //    if (place.address_components[i].types[0] == 'postal_code') {
+            //        document.getElementById('postal_code').innerHTML = place.address_components[i].long_name;
+            //    }
+            //    if (place.address_components[i].types[0] == 'country') {
+            //        document.getElementById('country').innerHTML = place.address_components[i].long_name;
+            //    }
+            //}
+
+            // Location details
+            document.getElementById('location').value = place.formatted_address;
+            document.getElementById('lat').value = place.geometry.location.lat();
+            document.getElementById('lon').value = place.geometry.location.lng();
+        });
+    }
+</script>
+<script>
+    //Form submit
+    var validator = $("#frmEdit").kendoValidator().data("kendoValidator");
+    $("form").submit(function (event) {
+        if (validator.validate() === true) {
+            kendo.ui.progress(parent.$("#WidgetConfigWindow"), true);
+            var frm = $('#frmEdit');
+            var httpPost = $.post('@Url.Action("Update", "PosProduce")', frm.serialize(), function (dataResponse) {
+                kendo.ui.progress(parent.$("#WidgetConfigWindow"), false);
+                if (dataResponse.StatusCode === 200) {
+                    parent.voidRefresh();
+                    parent.ActiveRow(dataResponse.ActiveCode);
+                    if (parseInt($("#hfLuuvathem").val()) === 0) {
+                        closeWindowEdit();
+                    } else {
+                        parent.Create('0');
+                    }
+                } else {
+                    Notification('@Gemini.Resources.Resource.EditUnsuccessful', dataResponse.StatusCode, dataResponse.MessagError, '@Gemini.Resources.Resource.ListStatusNotificationError', true);
+                }
+            }).fail(function (xhr, status, error) {
+                kendo.ui.progress(parent.$("#WidgetConfigWindow"), false);
+                Notification('@Gemini.Resources.Resource.ListUnsuccessful', '@Gemini.Resources.Resource.ListStatus404', error, '@Gemini.Resources.Resource.ListStatusNotificationError', true);
+            });
+        }
+        event.preventDefault();
+    });
+
+    function closeWindowEdit() {
+        var window = parent.$("#WidgetConfigWindow").data("kendoWindow");
+        window.close();
+    }
+
+    function voidDeleteItem() {
+        parent.Delete();
+        closeWindowEdit();
+    }
+
+    function voidRefreshItem() {
+        if (parseInt($("#IsUpdate").val()) == 0) {
+            parent.Create('0');
+        } else if (parseInt($("#IsUpdate").val()) == 1) {
+            parent.Edit('1');
+        }
+    }
+
+    function checkall() {
+        var cbox = document.getElementsByClassName("chkbox");
+        if ($("#selectAll").is(":checked") === true) {
+            for (var i = 0; i < cbox.length; i++) {
+                if (cbox[i].type == 'checkbox')
+                    cbox[i].checked = true;
+            }
+        } else {
+            for (var i = 0; i < cbox.length; i++) {
+                if (cbox[i].type == 'checkbox')
+                    cbox[i].checked = false;
+            }
+        }
+    }
+
+    var idsChecked = "";
+    function rowCheckDelete() {
+        idsChecked = "";
+        var grid = $("#grid").data("kendoGrid");
+        var ds = grid.dataSource.view();
+        for (var i = 0; i < ds.length; i++) {
+            var row = grid.table.find("tr[data-uid='" + ds[i].uid + "']");
+            var checkbox = $(row).find(".chkbox");
+            if (checkbox.is(":checked")) {
+                idsChecked = idsChecked + ds[i].Guid + ";";
+            }
+        }
+    }
+
+    function getDataItem() {
+        var grid = $("#grid").data("kendoGrid");
+        if (grid.select().length > 0) {
+            var dataItem = grid.dataItem(grid.select());
+            if (dataItem) {
+                return dataItem;
+            }
+        }
+        return null;
+    }
+
+    function DeleteImage() {
+        rowCheckDelete();
+        kendo.ui.progress(parent.$("#WidgetConfigWindow1"), true);
+        $.get('@Url.Action("DeleteFProduceGallery", "PosProduce")', { guidProduce: $("#Guid").val(), guidGallery: idsChecked },
+                    function (dataResponse) {
+                        kendo.ui.progress(parent.$("#WidgetConfigWindow1"), false);
+                        if (dataResponse.StatusCode == 200) {
+                            voidRefresh();
+                            parent.voidRefresh();
+                            parent.ActiveRow(dataResponse.ActiveCode);
+
+                            Notification('@Gemini.Resources.Resource.ListSuccessful',
+                                undefined,
+                                '@Gemini.Resources.Resource.ListSuccessful',
+                                '@Gemini.Resources.Resource.ListStatusNotificationInfo');
+                        } else {
+                            Notification('@Gemini.Resources.Resource.ListUnsuccessful',
+                                dataResponse.StatusCode,
+                                dataResponse.MessagError,
+                                '@Gemini.Resources.Resource.ListStatusNotificationError');
+                        }
+                    })
+    };
+
+    function voidRefresh() {
+        LoadDataFind();
+    }
+
+    function LoadDataFind() {
+        $("#grid").data("kendoGrid").dataSource.read({ guid: $("#Guid").val() });
+    }
+
+    //Set friendly from name
+    function Friendly_urlChange() {
+        $("#SeoFriendUrl").val(RemoveUnicode($("#Name").val()));
+        $("#SeoTitle").val($("#Name").val());
+    }
+
+    $(document).ready(function () {
+        $("#btnUpload").kendoUpload({
+            async: {
+                saveUrl: '@Url.Action("Save", "PosProduce")?guidProduce=' + $("#Guid").val() + '',
+            },
+            select: onSelect,
+            multiple: true,
+            success: onSuccess,
+            upload: onUpload
+        });
+    });
+
+    var lstFilePath = [];
+    function onSuccess(e) {
+        var data = e.response;
+        var filePath = data.physicalPath;
+        lstFilePath.push(filePath);
+
+        if (parseInt($("#IsUpdate").val()) == 0) {
+            $("#grid").data("kendoGrid").dataSource.read({ guid: "", lstFilePath: lstFilePath.join(";") });
+        } else if (parseInt($("#IsUpdate").val()) == 1) {
+            $("#grid").data("kendoGrid").dataSource.read({ guid: $("#Guid").val(), lstFilePath: "" });
+        }
+    }
+
+    function onSelect(e) {
+        getFileInfo(e);
+    }
+
+    function onUpload(e) {
+        var files = e.files;
+        $.each(files, function () {
+            if (this.extension.toLowerCase() == ".png"
+                || this.extension.toLowerCase() == ".jpg"
+                || this.extension.toLowerCase() == ".jpeg"
+                || this.extension.toLowerCase() == ".mov"
+                || this.extension.toLowerCase() == ".mp4"
+                || this.extension.toLowerCase() == ".wmv"
+                || this.extension.toLowerCase() == ".mpg"
+                || this.extension.toLowerCase() == ".vob"
+                || this.extension.toLowerCase() == ".mp3") {
+
+            }
+            else {
+                alert("Định dạng file không hợp lệ");
+                e.preventDefault();
+            }
+        });
+    }
+
+    function getUpload() {
+        return $("#btnUpload").data("kendoUpload");
+    }
+
+    // size file
+    function getFileInfo(e) {
+        return $.map(e.files, function (file) {
+            var info = file.name;
+            var size;
+            // File size is not available in all browsers
+            if (file.size > 0) {
+                size = Math.ceil(file.size);
+            }
+            return size;
+        });
+    }
+
+    $(document).ready(function () {
+        document.getElementById('passwordhide').style.display = 'none';
+    });
+
+    ToolbarItem_Click();
+    PreventEventTextSubmit();
+    KeyboardNavigationEdit();
+    KendoTabStrip();
+</script>

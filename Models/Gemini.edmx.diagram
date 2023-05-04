@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="7f949d5aa8834bef9d86b16748f8a183" Name="Diagram1" ZoomLevel="65">
+        <EntityTypeShape EntityType="Gemini.CrmCustomer" Width="1.5" PointX="8" PointY="7.375" />
+        <EntityTypeShape EntityType="Gemini.CrmCustomerGroup" Width="1.5" PointX="5.75" PointY="8.625" />
+        <EntityTypeShape EntityType="Gemini.CrmEmailCampaign" Width="1.5" PointX="8" PointY="1.75" />
+        <EntityTypeShape EntityType="Gemini.CrmEmailSetting" Width="1.5" PointX="10.75" PointY="9.75" />
+        <EntityTypeShape EntityType="Gemini.CrmEmailTemplate" Width="1.5" PointX="5.75" PointY="2.5" />
+        <EntityTypeShape EntityType="Gemini.CrmEmailTracking" Width="1.5" PointX="10.25" PointY="2.75" />
+        <EntityTypeShape EntityType="Gemini.FControlMenu" Width="1.5" PointX="12.75" PointY="0.75" />
+        <EntityTypeShape EntityType="Gemini.FProduceGallery" Width="1.5" PointX="12.75" PointY="3.75" />
+        <EntityTypeShape EntityType="Gemini.FRoleControlMenu" Width="1.5" PointX="12.75" PointY="6.75" />
+        <EntityTypeShape EntityType="Gemini.MapCampaignSetting" Width="1.5" PointX="10.25" PointY="6.125" />
+        <EntityTypeShape EntityType="Gemini.PosCategory" Width="1.5" PointX="12.75" PointY="10.75" />
+        <EntityTypeShape EntityType="Gemini.PosProduce" Width="1.5" PointX="5.75" PointY="13.75" />
+        <EntityTypeShape EntityType="Gemini.SControl" Width="1.5" PointX="7.75" PointY="13.75" />
+        <EntityTypeShape EntityType="Gemini.SLanguage" Width="1.5" PointX="14.75" PointY="0.75" />
+        <EntityTypeShape EntityType="Gemini.SMenu" Width="1.5" PointX="14.75" PointY="4.75" />
+        <EntityTypeShape EntityType="Gemini.SRegion" Width="1.5" PointX="14.75" PointY="9.75" />
+        <EntityTypeShape EntityType="Gemini.SReplaceCode" Width="1.5" PointX="9.75" PointY="14.75" />
+        <EntityTypeShape EntityType="Gemini.SRole" Width="1.5" PointX="14.75" PointY="13.75" />
+        <EntityTypeShape EntityType="Gemini.SType" Width="1.5" PointX="11.75" PointY="15.75" />
+        <EntityTypeShape EntityType="Gemini.SUser" Width="1.5" PointX="16.75" PointY="0.75" />
+        <EntityTypeShape EntityType="Gemini.sysdiagram" Width="1.5" PointX="16.75" PointY="7.75" />
+        <EntityTypeShape EntityType="Gemini.UDocument" Width="1.5" PointX="16.75" PointY="10.75" />
+        <EntityTypeShape EntityType="Gemini.UFaq" Width="1.5" PointX="3" PointY="12.875" />
+        <EntityTypeShape EntityType="Gemini.UGallery" Width="1.5" PointX="16.75" PointY="15.75" />
+        <EntityTypeShape EntityType="Gemini.UGroup" Width="1.5" PointX="0.75" PointY="7" />
+        <EntityTypeShape EntityType="Gemini.UHtml" Width="1.5" PointX="3" PointY="7.25" />
+        <EntityTypeShape EntityType="Gemini.ULink" Width="1.5" PointX="13.75" PointY="17.75" />
+        <EntityTypeShape EntityType="Gemini.UNew" Width="1.5" PointX="3" PointY="1.625" />
+        <EntityTypeShape EntityType="Gemini.UProject" Width="1.5" PointX="18.75" PointY="0.75" />
+        <EntityTypeShape EntityType="Gemini.UTag" Width="1.5" PointX="0.75" PointY="18.75" />
+        <EntityTypeShape EntityType="Gemini.WLiveChat" Width="1.5" PointX="2.75" PointY="18.75" />
+        <EntityTypeShape EntityType="Gemini.WOrder" Width="1.5" PointX="18.75" PointY="4.75" />
+        <EntityTypeShape EntityType="Gemini.WOrderDetail" Width="1.5" PointX="7.75" PointY="18.75" />
+        <EntityTypeShape EntityType="Gemini.WPartner" Width="1.5" PointX="18.75" PointY="8.75" />
+        <EntityTypeShape EntityType="Gemini.WRatingProduce" Width="1.5" PointX="18.75" PointY="12.75" />
+        <EntityTypeShape EntityType="Gemini.WTestimonial" Width="1.5" PointX="18.75" PointY="17.75" />
+        <AssociationConnector Association="Gemini.FK_CrmCustomer_CrmCustomerGroup" />
+        <AssociationConnector Association="Gemini.FK_CrmEmailTracking_CrmCustomer" />
+        <AssociationConnector Association="Gemini.FK_CrmEmailCampaign_CrmEmailTemplate" />
+        <AssociationConnector Association="Gemini.FK_CrmEmailTracking_CrmEmailCampaign" />
+        <AssociationConnector Association="Gemini.FK_MapCampaignSetting_CrmEmailCampaign" />
+        <AssociationConnector Association="Gemini.FK_UFaq_UGroup" />
+        <AssociationConnector Association="Gemini.FK_UHtml_UGroup" />
+        <AssociationConnector Association="Gemini.FK_UNews_UGroup" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

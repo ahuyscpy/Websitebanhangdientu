@@ -1,0 +1,296 @@
+﻿<!DOCTYPE html>
+<!--[if IE 8 ]><html class="ie" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="vi-VN" lang="vi-VN">
+<!--<![endif]-->
+<head>
+    <!-- Basic Page Needs -->
+    <meta charset="utf-8">
+    <!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'><![endif]-->
+    <title>@ViewBag.Title</title>
+    <meta name="description" content="@ViewBag.Description">
+    <meta property="og:title" content="@ViewBag.Title" />
+    <meta property="og:description" content="@ViewBag.Description" />
+    <meta property="og:image" content="@ViewBag.Image" />
+    <meta property="og:locale" content="vi_VN" />
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <link rel='stylesheet' href='/assets/theme/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='/assets/theme/css/elegant-icons.css'>
+    <link rel='stylesheet' href='/assets/theme/css/font-awesome.min.css'>
+    <link rel='stylesheet' href='/assets/theme/css/jquery-ui.min.css'>
+    <link rel='stylesheet' href='/assets/theme/css/nice-select.css'>
+    <link rel='stylesheet' href='/assets/theme/css/owl.carousel.min.css'>
+    <link rel='stylesheet' href='/assets/theme/css/slicknav.min.css'>
+    <link rel='stylesheet' href='/assets/theme/css/style.css'>
+    <style>
+        
+    </style>
+</head>
+<body id="body" class="blog-page blog-post">
+    <script src="~/assets/theme/js/jquery-3.3.1.min.js"></script>
+    <script>
+        var isShowLiveChat = false;
+        var sortBy = "newest";
+        var page = "page-1";
+
+        function loadSearchData() {
+            let url = "/tim-kiem?keyWord=" + $('#keyWord').val();
+            if (page && page.length > 0) {
+                url += "&page=" + page;
+            }
+            if (sortBy && sortBy.length > 0) {
+                url += "&sortBy=" + sortBy;
+            }
+            location.href = location.origin + url;
+        }
+
+        function setCookie(cname, cvalue, exdays) {
+            const d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            let expires = "expires=" + d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+        }
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function loadLoveProduce() {
+            var lstProduce = $('.liProduce');
+            for (var i = 0; i < lstProduce.length; i++) {
+                lstProduce[i].classList.remove("featured__item__pic__hovered");
+            }
+
+            var count = 0;
+
+            var val = getCookie("loveProduce");
+
+            if (val && val.length > 0) {
+                var lstGuidProduce = val.split(",");
+
+                if (lstGuidProduce && lstGuidProduce.length > 0) {
+                    for (var i = 0; i < lstGuidProduce.length; i++) {
+                        var guidProduce = lstGuidProduce[i];
+
+                        if (guidProduce && guidProduce.length > 0) {
+                            var aTag = $('#' + guidProduce);
+                            if (aTag && aTag.length > 0) {
+                                var li = aTag[0].parentNode;
+                                li.classList.add("featured__item__pic__hovered");
+                            }
+
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            $('.header__cart > ul > li > .tin__da__luu > span').html(count);
+            $('.humberger__menu__cart > ul > li > .tin__da__luu > span').html(count);
+        }
+        // button sp yêu thích
+        function loveProduce(guidProduce) {
+            var val = getCookie("loveProduce");
+            if (val && val.length > 0) {
+                if (val.indexOf(guidProduce) > -1) {
+                    val = val.replace(guidProduce, "");
+                }
+                else {
+                    val += "," + guidProduce;
+                }
+            }
+            else {
+                val = guidProduce;
+            }
+
+            setCookie("loveProduce", val, 15);
+
+            loadLoveProduce();
+        }
+
+        function followUser(guidUser) {
+            var data = "guidUser=" + guidUser;
+            $.post('@Url.Action("FollowUser", "HomeCommon")', data, function (dataResponse) {
+                if (dataResponse.url) {
+                    location.href = location.origin + dataResponse.url;
+                }
+                else {
+                    if (dataResponse.StatusCode == 200) {
+                        loadFollowUser();
+                    } else {
+                        $('#follow-fail').show();
+                    }
+                }
+            });
+        }
+
+        function loadFollowUser() {
+            var lstFollow = $('.liFollow');
+            for (var i = 0; i < lstFollow.length; i++) {
+                lstFollow[i].classList.remove("featured__item__pic__hovered");
+                var aTag = lstFollow[i].getElementsByTagName('a');
+                if (aTag && aTag.length > 0) {
+                    $('#' + aTag[0].id).html('<i class="fa fa-plus" style="top: -4px"> Theo dõi</i>');
+                    $('#' + aTag[0].id).attr('title', 'Theo dõi');
+                }
+            }
+
+            $.post('@Url.Action("GetFollowUser", "HomeCommon")', {}, function (dataResponse) {
+                if (dataResponse.guidFollow && dataResponse.guidFollow.length > 0) {
+                    var val = dataResponse.guidFollow;
+
+                    if (val && val.length > 0) {
+                        var lstGuidFollow = val.split(",");
+
+                        if (lstGuidFollow && lstGuidFollow.length > 0) {
+                            for (var i = 0; i < lstGuidFollow.length; i++) {
+                                var guidFol = lstGuidFollow[i];
+
+                                if (guidFol && guidFol.length > 0) {
+                                    var aTag = $('#' + guidFol);
+                                    if (aTag && aTag.length > 0) {
+                                        aTag.html('<i class="fa fa-check" style="top: -4px"> Đang theo dõi</i>');
+                                        aTag.attr('title', 'Đang theo dõi');
+                                        var li = aTag[0].parentNode;
+                                        li.classList.add("featured__item__pic__hovered");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function showRating(id, height) {
+            var lstProduce = $('.' + id);
+
+            for (var z = 0; z < lstProduce.length; z++) {
+                var sp = lstProduce[z];
+                if (sp) {
+                    var x = parseInt(lstProduce[z].textContent);
+                    var y = lstProduce[z].id;
+                    document.getElementById(y).innerHTML = '';
+                    for (var i = 0; i < x; i++) {
+                        var img = document.createElement("img");
+                        img.height = height;
+                        img.src = "/assets/theme/img/star-full-icon.png";
+                        document.getElementById(y).appendChild(img);
+                    }
+                    for (; i < 5; i++) {
+                        var img = document.createElement("img");
+                        img.height = height;
+                        img.src = '/assets/theme/img/star-empty-icon.png';
+                        document.getElementById(y).appendChild(img);
+                    }
+                }
+            }
+        }
+
+        function onLiveChat(username) {
+            if (username) {
+                isShowLiveChat = true;
+
+                $('#miniLiveChat').hide();
+                $('#LiveChat').show();
+            }
+            else {
+                window.location.href = "/admin";
+            }
+        }
+
+        function offLiveChat() {
+            isShowLiveChat = false;
+
+            $('#miniLiveChat').show();
+            $('#LiveChat').hide();
+        }
+        // button giỏ hàng
+        function cartProduce(guidProduce, username) {
+            if (username) {
+                var vals = [];
+                var cookieCart = getCookie("cartProduce_" + username);
+                if (cookieCart) {
+                    vals = JSON.parse(cookieCart);
+                }
+
+                var existVal = vals.find(x => x.GuidProduce == guidProduce);
+                if (existVal) {
+                    existVal.Quantity += 1;
+                }
+                else {
+                    var val = {
+                        GuidProduce: guidProduce,
+                        Quantity: 1
+                    };
+
+                    vals.push(val);
+                }
+
+                setCookie("cartProduce_" + username, JSON.stringify(vals), 15);
+
+                loadCartProduce(username);
+
+                var x = document.getElementById("addCartSuccess");
+                x.className = "show";
+                setTimeout(function () {
+                    x.className = x.className.replace("show", "");
+                }, 1500);
+            }
+            else {
+                window.location.href = "/admin";
+            }
+        }
+
+        function loadCartProduce(username) {
+            var vals = [];
+            var cookieCart = getCookie("cartProduce_" + username);
+            if (cookieCart) {
+                vals = JSON.parse(cookieCart);
+            }
+
+            var count = 0;
+
+            if (vals && vals.length > 0) {
+                for (var i = 0; i < vals.length; i++) {
+                    var itemProduce = vals[i];
+
+                    if (itemProduce && itemProduce.Quantity > 0) {
+                        count += itemProduce.Quantity;
+                    }
+                }
+            }
+
+            $('.header__cart > ul > li > .gio__hang > span').html(count);
+            $('.humberger__menu__cart > ul > li > .gio__hang > span').html(count);
+        }
+    </script>
+    <div id="addCartSuccess">Sản phẩm đã được thêm vào Giỏ hàng</div>
+    <div id="removeCartSuccess">Sản phẩm đã được xóa khỏi Giỏ hàng</div>
+    <div id="payCartSuccess">Đặt hàng thành công</div>
+
+    @*<body class="body-color-blue" data-main-color="#0b2076">*@
+    @Html.Action("Header", "Homecommon")
+    @RenderBody()  <!--Index.cshtml-->
+    @Html.Action("Footer", "Homecommon")
+    
+
+    @Scripts.Render("~/bundles/themejs")
+
+    <script>
+        loadLoveProduce();
+    </script>
+</body>
+</html>

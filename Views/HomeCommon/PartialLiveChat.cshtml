@@ -1,0 +1,295 @@
+﻿@model Gemini.Models._05_Website.WLiveChatModel
+
+<link href="~/assets/admin/css/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel='stylesheet' href='/assets/theme/css/font-awesome.min.css'>
+<script src="~/Scripts/jquery-3.1.0.min.js"></script>
+
+<style>
+    .live-chat {
+        align-items: center;
+        background-color: #fff;
+        border-radius: 4px 4px 0 0;
+        box-shadow: 0 4px 20px 0 rgb(28 28 51 / 16%);
+        box-sizing: border-box;
+        display: flex;
+        height: 48px;
+        justify-content: space-between;
+        position: relative;
+        transform: translateX(0);
+        transform-origin: bottom right;
+        transition: background-color .15s ease-out;
+        width: 100px;
+    }
+
+    #chat-btn {
+        width: 35px;
+        height: 23px;
+        background-color: #33a837;
+        border-radius: 6px;
+        position: relative;
+        margin-left: 11px;
+        margin-bottom: 7px;
+    }
+
+        #chat-btn:after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 0;
+            height: 0;
+            right: 10px;
+            bottom: -10px;
+            border-left: 10px solid transparent;
+            border-right: 2px solid transparent;
+            border-top: 10px solid #33a837;
+        }
+
+    .disable-click {
+        pointer-events: none;
+    }
+
+    .a-hover:hover {
+        cursor: pointer;
+    }
+
+    .FullPage {
+        width: 100%;
+        margin: 0 auto;
+        padding: 0px;
+    }
+
+    .auto-style1 {
+        width: 100%;
+        height: auto;
+    }
+
+    #menuID {
+        width: 35%;
+        vertical-align: top;
+    }
+
+    .HeadStyle {
+        font-size: xx-large;
+        background-color: #0094ff;
+        color: #ffffff;
+        text-align: center;
+        padding: 25px;
+    }
+
+    .FooterStyle {
+        font-size: small;
+        background-color: #0094ff;
+        color: #ffffff;
+        padding: 2px;
+        text-align: center;
+    }
+
+    .middleStyle {
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 10px;
+        height: 400px;
+    }
+
+    .OnlineCSS {
+        position: relative;
+        border: 0px solid #079404;
+        height: 7px;
+        width: 7px;
+        border-radius: 50%;
+        background-color: #079404;
+        float: right;
+        margin-top: 3%;
+    }
+
+    .FollowCSS {
+        position: relative;
+        border: 0px solid #079404;
+        height: 7px;
+        width: 7px;
+        border-radius: 50%;
+        background-color: #079404;
+        float: right;
+        margin-top: 3%;
+    }
+
+    .OfflineCSS {
+        position: relative;
+        border: 0px solid #878080;
+        height: 7px;
+        width: 7px;
+        border-radius: 50%;
+        background-color: #c2bbbb;
+        float: right;
+        margin-top: 3%;
+    }
+
+    .SenderClass {
+        left: 55%;
+        background: #0b59ce;
+        color: #ffffff;
+        border: 1px solid #0b59ce;
+    }
+
+    .ReceiverClass {
+        left: -55%;
+        background: #c46909;
+        color: #ffffff;
+        border: 1px solid #c46909;
+    }
+
+    .MainChatListClass {
+        padding: 5px;
+        width: 250px;
+        position: relative;
+        border-radius: 5px;
+        word-wrap: break-word;
+        margin-top: 5px;
+    }
+
+    .SenderClass::after {
+        content: ' ';
+        position: absolute;
+        width: 0;
+        height: 0;
+        left: 243px;
+        top: 0px;
+        border: 10px solid;
+        border-color: transparent transparent #0b59ce #0b59ce;
+    }
+
+    .ReceiverClass::after {
+        content: ' ';
+        position: absolute;
+        width: 0;
+        height: 0;
+        right: 243px;
+        top: 3px;
+        border: 10px solid;
+        border-color: #c46909 #c46909 transparent transparent;
+    }
+
+    .item-chat:hover {
+        cursor: pointer;
+    }
+
+    #MenuContentHolder_Panel1 > div {
+        max-height: 75%;
+    }
+
+    #tableLiveChat {
+        width: 95% !important;
+    }
+
+    #MainContentHolder_chatPanel {
+        max-height: 291px;
+        overflow: auto;
+    }
+
+        #MainContentHolder_chatPanel > div {
+            min-height: 291px !important;
+            max-height: 360px !important;
+        }
+
+    #btnSendLiveChat > input {
+        width: 100% !important;
+    }
+
+    .MainChatListClass {
+        width: 150px !important;
+    }
+
+    .SenderClass::after {
+        content: unset !important;
+    }
+
+    .pre-scrollable {
+        overflow-y: unset !important;
+    }
+</style>
+
+<div id="miniLiveChat" style="z-index: 2; position: fixed; bottom: 0px; padding: 0px; right: 10px; font-size: 50px;">
+    @if (Model.CurrentUser != null)
+    {
+        <a title="Chat" class="a-hover live-chat" onclick="onLiveChat('@Model.CurrentUser.Username');"><div id="chat-btn"></div> <span style="font-size: 15px; margin-right: 7px; color: #33a837; font-weight: 700;">CHAT</span></a>
+    }
+    else
+    {
+        <a title="Chat" class="a-hover live-chat" onclick="onLiveChat();"><div id="chat-btn"></div> <span style="font-size: 15px; margin-right: 7px; color: #33a837; font-weight: 700;">CHAT</span></a>
+    }
+</div>
+<div id="LiveChat" class="FullPage" style="display: none; z-index: 2; width: 35%; min-height: 400px; position: fixed; bottom: 0px; padding: 0px; right: 0px;">
+    <table class="auto-style1" style="background-color: #fff; border: 1px solid #dcdce0; box-shadow: 0 4px 20px 0 rgb(74 74 78 / 16%);">
+        <tbody>
+            <tr>
+                <!-- Main Part-->
+                <td id="menuID" class="middleStyle" style="border-right: 1px solid #eee;">
+                    <a onclick="offLiveChat();" class="a-hover"><i class="fa fa-times"></i></a>
+                    <div style="text-align: center; display: inline-block; width: 80%;">
+                        <span style="font-weight: 700">CHAT</span>
+                    </div>
+                    <div>
+                        <script>
+                            function playSound() {
+                                document.getElementById("audioId").play();
+                            }
+                        </script>
+                        <audio id="audioId" src="~/assets/admin/sound/tone.wav" style="display: none" controls="controls" preload="auto"></audio>
+                        <div id="MenuContentHolder_UpdatePanel2">
+                            <div id="MenuContentHolder_Panel1">
+                                <div style="max-height: 520px; padding: 5px" class="col-lg-12 pre-scrollable">
+                                    <div id="partialUnreadMessage" style="margin-top: 15px">
+                                        @Html.Action("PartialUnreadMessage", "WLiveChat")
+                                    </div>
+
+                                    <div id="partialFollowUser">
+                                        @Html.Action("PartialFollowUser", "WLiveChat")
+                                    </div>
+
+                                    @*<div id="partialOnlineUser">
+                                            @Html.Action("PartialOnlineUser", "WLiveChat")
+                                        </div>
+
+                                        <div id="partialOfflineUser">
+                                            @Html.Action("PartialOfflineUser", "WLiveChat")
+                                        </div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="middleStyle">
+                    <div>
+                        <div id="partialChatPannel">
+                            @Html.Action("PartialChatPannel", "WLiveChat")
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    if (isShowLiveChat == true) {
+        $('#LiveChat').show();
+        $('#miniLiveChat').hide();
+    }
+    else {
+        $('#LiveChat').hide();
+        $('#miniLiveChat').show();
+    }
+
+    function refreshData() {
+        loadDataUnreadMessage();
+        loadDataOnlineUser();
+        loadDataOfflineUser();
+
+        $('#btnRefreshData').addClass("disable-click");
+
+        // Cause the button to re-enable after 15 seconds.
+        setTimeout(function () {
+            $('#btnRefreshData').removeClass("disable-click");
+        }, 15000);
+    }
+</script>

@@ -1,0 +1,77 @@
+﻿@model Gemini.Models._20_Web.FooterModel
+
+<!-- Footer Section Begin -->
+<footer class="footer spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="footer__about">
+                    <div class="footer__about__logo">
+                        <a href="/"><img src="" alt=""></a>
+                    </div>
+                    <ul>
+                        <li>Địa chỉ: Hà Nội</li>
+                        <li>SĐT: 0372506188</li>
+                        <li>Email: anhnguyenmai1308@gmail.com</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-6 offset-lg-1">
+                <div class="footer__widget">
+                    <h6>Danh mục</h6>
+                    @if (Model.ListPosCategory != null && Model.ListPosCategory.Any())
+                    {
+                        if (Model.ListPosCategory.Count > 6)
+                        {
+                            <ul>
+                                @for (var i = 0; i <= 5; i++)
+                                {
+                                    <li><a href="/danh-muc/@Model.ListPosCategory[i].SeoFriendUrl">@Model.ListPosCategory[i].Name</a></li>
+                                }
+                            </ul>
+                            <ul>
+                                @for (var i = 6; i < Model.ListPosCategory.Count; i++)
+                                {
+                                    <li><a href="/danh-muc/@Model.ListPosCategory[i].SeoFriendUrl">@Model.ListPosCategory[i].Name</a></li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <ul>
+                                @for (var i = 0; i < Model.ListPosCategory.Count; i++)
+                                {
+                                    <li><a href="/danh-muc/@Model.ListPosCategory[i].SeoFriendUrl">@Model.ListPosCategory[i].Name</a></li>
+                                }
+                            </ul>
+                        }
+
+                    }
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-12">
+                <div class="footer__widget">
+                    <h6>Các chi nhánh</h6>
+                    <ul>
+                        <li>Số 33, phố Hàng Bài, quần Hoàn Kiếm, Hà Nội </li>
+                        <li>Số 43, phố Tràng Tiền, quần Hoàn Kiếm, Hà Nội </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="footer__copyright">
+                    <div class="footer__copyright__text">
+                        <p>
+                            Copyright &copy;
+                            <script>document.write(new Date().getFullYear());</script> All rights reserved
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- Footer Section End -->

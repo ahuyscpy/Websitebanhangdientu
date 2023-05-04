@@ -1,0 +1,361 @@
+﻿@model Gemini.Models._20_Web.ProduceCartModel
+@{
+    Layout = "~/Views/Shared/_Root.Head.cshtml";
+}
+
+@if (Model != null)
+{
+    <!-- Hero Section Begin -->
+    <section class="hero hero-normal">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3">
+                    <div class="hero__categories">
+                        <div class="hero__categories__all">
+                            <i class="fa fa-bars"></i>
+                            <span>Danh mục</span>
+                        </div>
+                        <ul>
+                            @if (Model.ListPosCategory != null && Model.ListPosCategory.Any())
+                            {
+                                foreach (var item in Model.ListPosCategory)
+                                {
+                                    <li><a href="/danh-muc/@item.SeoFriendUrl">@item.Name</a></li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-9">
+                    <div class="hero__search">
+                        <div class="hero__search__form">
+                            <form action="javascript:loadSearchData();">
+                                <input type="text" id="keyWord" placeholder="Tìm kiếm ...">
+                                <button type="button" class="site-btn" onclick="loadSearchData();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </form>
+                        </div>
+                        <div class="hero__search__phone">
+                            <div class="hero__search__phone__icon">
+                                <i class="fa fa-phone"></i>
+                            </div>
+                            <div class="hero__search__phone__text">
+                                <h5>0366 797 212</h5>
+                                <span>Hỗ trợ 24/7</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Hero Section End -->
+
+    <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-section set-bg" data-setbg="/assets/theme/img/breadcrumb.jpg">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Giỏ hàng</h2>
+                        <div class="breadcrumb__option">
+                            <a href="/">Trang chủ</a>
+                            <span>Giỏ hàng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    <!-- Shoping Cart Section Begin -->
+    <section class="shoping-cart spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="shoping__cart__table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="shoping__product">Sản phẩm</th>
+                                    <th style="width: 200px; text-align: center">Giá</th>
+                                    <th style="text-align: center">Số lượng</th>
+                                    <th style="width: 300px; text-align: center">Thành tiền</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.ListPosProduceCart != null && Model.ListPosProduceCart.Any())
+                                {
+                                    foreach (var itemCart in Model.ListPosProduceCart)
+                                    {
+                                        <tr id="tr__@itemCart.Guid">
+                                            <td class="shoping__cart__item">
+                                                <img src="@itemCart.LinkImg0" alt="" width="100" height="100">
+                                                <h5><a href="/san-pham/@itemCart.SeoFriendUrl">@itemCart.Name</a></h5>
+                                            </td>
+                                            <td class="shoping__cart__price">
+                                                @String.Format("{0:n0}", itemCart.Price) @itemCart.Unit
+                                            </td>
+                                            <td class="shoping__cart__quantity">
+                                                <div class="quantity">
+                                                    <div class="pro-qty" id="@itemCart.Guid">
+                                                        <input id="qty__@itemCart.Guid" type="text" value="@itemCart.Quantity" onchange="changeQuantityCartItem('@itemCart.Guid')">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="shoping__cart__total" id="item__cart__total">
+                                                <span id="price__@itemCart.Guid" style="display: none;">@itemCart.Price</span>
+                                                <span id="unit__@itemCart.Guid" style="display: none;">@itemCart.Unit</span>
+                                                <span id="total__@itemCart.Guid">@String.Format("{0:n0}", itemCart.Price * itemCart.Quantity)</span> @itemCart.Unit
+                                            </td>
+                                            <td class="shoping__cart__item__close">
+                                                <span class="icon_close" onclick="deleteCartItem('@itemCart.Guid')"></span>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="shoping__cart__btns">
+                        <a href="/" class="primary-btn cart-btn" style="margin-bottom: 10px">Tiếp tục mua sắm</a>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="shoping__checkout" style="margin-top: 0px;">
+                        <h5>Giỏ hàng</h5>
+                        <div style="text-align: center;margin-bottom: 20px;margin-top: -10px;font-weight: bold; color: red;" id="errAcc"></div>
+                        <input class="form-control-cart" id="fullAddress" name="fullAddress" placeholder="Địa chỉ *" />
+                        <input class="form-control-cart" style="margin-top: 10px;" id="mobile" name="mobile" placeholder="SĐT *" />
+                        <ul style="margin-top: 20px;">
+                            @if (Model.ListTotalByUnit != null && Model.ListTotalByUnit.Any())
+                            {
+                                foreach (var itemTotalByUnit in Model.ListTotalByUnit)
+                                {
+                                    <span id="total__cart__val__@itemTotalByUnit.Key" class="total__cart__val" style="display: none;">@itemTotalByUnit.Value</span>
+                                    <li>Tổng tiền <span>@itemTotalByUnit.Key</span><span id="total__cart__@itemTotalByUnit.Key">@String.Format("{0:n0}", itemTotalByUnit.Value)</span></li>
+                                }
+                            }
+                        </ul>
+                        <a id="btnPayment" href="javascript:payCart();" class="primary-btn disabled">Thanh toán</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Shoping Cart Section End -->
+}
+
+<style>
+    a.disabled {
+        pointer-events: none;
+        cursor: default;
+        background-color: #eee;
+        color: #333;
+    }
+
+    .form-control-cart {
+        width: 100%;
+        height: 50px;
+        font-size: 16px;
+        color: #6f6f6f;
+        padding-left: 20px;
+        border: 1px solid #ebebeb;
+        border-radius: 0px;
+    }
+</style>
+
+<script>
+    enableBtnPay();
+
+    function dec_qty(guidProduce) {
+        var vals = [];
+        var cookieCart = getCookie("cartProduce_@ViewBag.CurrentUsername");
+        if (cookieCart) {
+            vals = JSON.parse(cookieCart);
+        }
+
+        var price = parseFloat($('#price__' + guidProduce)[0].innerText);                   // int
+        var unit = $('#unit__' + guidProduce)[0].innerText;                                 // text
+        var total = $('#total__' + guidProduce)[0];                                         // item
+        var totalCart = $('#total__cart__' + unit)[0];                                      // item
+        var totalCartVal = parseFloat($('#total__cart__val__' + unit)[0].innerText);        // int
+
+        var existVal = vals.find(x => x.GuidProduce == guidProduce);
+        if (existVal) {
+            if (existVal.Quantity > 0) {
+                existVal.Quantity -= 1;
+
+                total.textContent = (price * existVal.Quantity).toLocaleString('it-IT');
+
+                totalCart.textContent = (totalCartVal - price).toLocaleString('it-IT');
+                $('#total__cart__val__' + unit)[0].innerText = (totalCartVal - price);
+            }
+        }
+
+        setCookie("cartProduce_@ViewBag.CurrentUsername", JSON.stringify(vals), 15);
+
+        loadCartProduce("@ViewBag.CurrentUsername");
+
+        enableBtnPay();
+    }
+
+    function inc_qty(guidProduce) {
+        var vals = [];
+        var cookieCart = getCookie("cartProduce_@ViewBag.CurrentUsername");
+        if (cookieCart) {
+            vals = JSON.parse(cookieCart);
+        }
+
+        var price = parseFloat($('#price__' + guidProduce)[0].innerText);                   // int
+        var unit = $('#unit__' + guidProduce)[0].innerText;                                 // text
+        var total = $('#total__' + guidProduce)[0];                                         // item
+        var totalCart = $('#total__cart__' + unit)[0];                                      // item
+        var totalCartVal = parseFloat($('#total__cart__val__' + unit)[0].innerText);        // int
+
+        var existVal = vals.find(x => x.GuidProduce == guidProduce);
+        if (existVal) {
+            existVal.Quantity += 1;
+
+            total.textContent = (price * existVal.Quantity).toLocaleString('it-IT');
+
+            totalCart.textContent = (totalCartVal + price).toLocaleString('it-IT');
+            $('#total__cart__val__' + unit)[0].innerText = (totalCartVal + price);
+        }
+
+        setCookie("cartProduce_@ViewBag.CurrentUsername", JSON.stringify(vals), 15);
+
+        loadCartProduce("@ViewBag.CurrentUsername");
+
+        enableBtnPay();
+    }
+
+    function changeQuantityCartItem(guidProduce) {
+        var vals = [];
+        var cookieCart = getCookie("cartProduce_@ViewBag.CurrentUsername");
+        if (cookieCart) {
+            vals = JSON.parse(cookieCart);
+        }
+
+        var price = parseFloat($('#price__' + guidProduce)[0].innerText);                   // int
+        var unit = $('#unit__' + guidProduce)[0].innerText;                                 // text
+        var total = $('#total__' + guidProduce)[0];                                         // item
+        var totalCart = $('#total__cart__' + unit)[0];                                      // item
+        var totalCartVal = parseFloat($('#total__cart__val__' + unit)[0].innerText);        // int
+
+        var existVal = vals.find(x => x.GuidProduce == guidProduce);
+        if (existVal) {
+            var newQty = parseFloat($('#qty__' + guidProduce).val());
+
+            total.textContent = (price * newQty).toLocaleString('it-IT');
+
+            totalCart.textContent = (totalCartVal + price * (newQty - existVal.Quantity)).toLocaleString('it-IT');
+            $('#total__cart__val__' + unit)[0].innerText = (totalCartVal + price * (newQty - existVal.Quantity));
+
+            existVal.Quantity = newQty;
+        }
+
+        setCookie("cartProduce_@ViewBag.CurrentUsername", JSON.stringify(vals), 15);
+
+        loadCartProduce("@ViewBag.CurrentUsername");
+
+        enableBtnPay();
+    }
+
+    function deleteCartItem(guidProduce) {
+        var vals = [];
+        var cookieCart = getCookie("cartProduce_@ViewBag.CurrentUsername");
+        if (cookieCart) {
+            vals = JSON.parse(cookieCart);
+        }
+
+        var price = parseFloat($('#price__' + guidProduce)[0].innerText);                   // int
+        var unit = $('#unit__' + guidProduce)[0].innerText;                                 // text
+        var totalCart = $('#total__cart__' + unit)[0];                                      // item
+        var totalCartVal = parseFloat($('#total__cart__val__' + unit)[0].innerText);        // int
+
+        var existVal = vals.find(x => x.GuidProduce == guidProduce);
+        if (existVal) {
+            totalCart.textContent = (totalCartVal - price * existVal.Quantity).toLocaleString('it-IT');
+            $('#total__cart__val__' + unit)[0].innerText = totalCartVal - price * existVal.Quantity;
+
+            const index = vals.indexOf(existVal);
+            if (index > -1) {
+                vals.splice(index, 1);
+                $('#tr__' + guidProduce).empty();
+            }
+        }
+
+        setCookie("cartProduce_@ViewBag.CurrentUsername", JSON.stringify(vals), 15);
+
+        loadCartProduce("@ViewBag.CurrentUsername");
+
+        var x = document.getElementById("removeCartSuccess");
+        x.className = "show";
+        setTimeout(function () {
+            x.className = x.className.replace("show", "");
+        }, 1500);
+
+        enableBtnPay();
+    }
+
+    function enableBtnPay() {
+        var total = 0;
+
+        var elements = document.getElementsByClassName('total__cart__val');
+
+        for (var i = 0; i < elements.length; i++) {
+            total += parseFloat(elements[i].innerText);
+        };
+
+        if (total == 0) {
+            $("#btnPayment").addClass("disabled");
+        }
+        else {
+            $("#btnPayment").removeClass("disabled");
+        }
+    }
+
+    function payCart() {
+        var fullAddress = $('#fullAddress').val();
+        var mobile = $('#mobile').val();
+
+        if (!fullAddress) {
+            $("#errAcc").html("Địa chỉ không được bỏ trống !");
+            return;
+        }
+
+        if (!mobile) {
+            $("#errAcc").html("SĐT không được bỏ trống !");
+            return;
+        }
+
+        var httpPost = $.post('@Url.Action("PayCart", "HomeCommon")?fullAddress=' + fullAddress + '&mobile=' + mobile, function (dataResponse) {
+            try {
+                var dataRes = JSON.parse(dataResponse);
+                if (dataRes.StatusCode == 200) {
+                    setCookie("cartProduce_@ViewBag.CurrentUsername", "" , 15);
+
+                    var x = document.getElementById("payCartSuccess");
+                    x.className = "show";
+                    setTimeout(function () {
+                        x.className = x.className.replace("show", "");
+                        location.reload();
+                    }, 2000);
+                }
+                else {
+                    console.log(dataRes.Message);
+                    $("#errAcc").html(dataRes.Message);
+                }
+            }
+            catch { }
+        }).fail(function (xhr, status, error) {
+            console.log(error);
+        });
+    }
+</script>
